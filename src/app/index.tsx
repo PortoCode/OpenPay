@@ -1,98 +1,158 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { BalanceCard } from '@/components/BalanceCard';
+import { QuickAction } from '@/components/QuickAction';
+import { TransactionItem } from '@/components/TransactionItem';
+import { mockTransactions } from '@/features/wallet/mockTransactions';
 
 export default function HomeScreen() {
+  const balance = 8420.75;
+
+  function showComingSoon(action: string) {
+    Alert.alert(
+      action,
+      'Funcionalidade demonstrativa. Vamos implementá-la em uma próxima etapa.',
+    );
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar style="dark" />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Olá, bem-vindo 👋</Text>
+            <Text style={styles.heading}>Sua carteira</Text>
+          </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>OP</Text>
+          </View>
+        </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <BalanceCard balance={balance} />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Acesso rápido</Text>
+
+          <View style={styles.actions}>
+            <QuickAction
+              icon="↗"
+              label="Enviar"
+              onPress={() => showComingSoon('Enviar dinheiro')}
+            />
+            <QuickAction
+              icon="+"
+              label="Adicionar"
+              onPress={() => showComingSoon('Adicionar dinheiro')}
+            />
+            <QuickAction
+              icon="⇄"
+              label="Transferir"
+              onPress={() => showComingSoon('Transferir')}
+            />
+          </View>
+        </View>
+
+        <View style={styles.transactionsSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Movimentações</Text>
+            <Text style={styles.counter}>
+              {mockTransactions.length} recentes
+            </Text>
+          </View>
+
+          {mockTransactions.map((transaction) => (
+            <TransactionItem
+              key={transaction.id}
+              transaction={transaction}
+            />
+          ))}
+        </View>
+
+        <Text style={styles.disclaimer}>
+          OpenPay • Ambiente demonstrativo
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
   safeArea: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    backgroundColor: '#F7F9F7',
   },
-  heroSection: {
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 28,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  greeting: {
+    fontSize: 13,
+    color: '#78827C',
+    marginBottom: 5,
+  },
+  heading: {
+    fontSize: 27,
+    fontWeight: '800',
+    color: '#172B23',
+  },
+  avatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#DCEAE2',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
-  title: {
+  avatarText: {
+    color: '#153E35',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  section: {
+    marginTop: 30,
+  },
+  sectionTitle: {
+    color: '#172B23',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  transactionsSection: {
+    marginTop: 32,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  counter: {
+    fontSize: 12,
+    color: '#78827C',
+  },
+  disclaimer: {
     textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    color: '#929A95',
+    fontSize: 11,
+    marginTop: 28,
   },
 });

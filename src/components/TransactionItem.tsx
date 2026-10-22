@@ -1,4 +1,3 @@
-
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Transaction } from '@/features/wallet/mockTransactions';

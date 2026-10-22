@@ -1,11 +1,10 @@
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalanceCard } from '@/components/BalanceCard';
 import { QuickAction } from '@/components/QuickAction';
-import { TransactionItem } from '@/components/TransactionItem';
-import { mockTransactions } from '@/features/wallet/mockTransactions';
 
 export default function HomeScreen() {
   const balance = 8420.75;
@@ -61,19 +60,16 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.transactionsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Movimentações</Text>
-            <Text style={styles.counter}>
-              {mockTransactions.length} recentes
-            </Text>
-          </View>
+          <Text style={styles.sectionTitle}>Movimentações</Text>
 
-          {mockTransactions.map((transaction) => (
-            <TransactionItem
-              key={transaction.id}
-              transaction={transaction}
-            />
-          ))}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Ver todas as transações"
+            onPress={() => router.push('/transactions')}
+            hitSlop={8}
+          >
+            <Text style={styles.counter}>Ver todas ›</Text>
+          </Pressable>
         </View>
 
         <Text style={styles.disclaimer}>
@@ -137,13 +133,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   transactionsSection: {
-    marginTop: 32,
-  },
-  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginTop: 24,
   },
   counter: {
     fontSize: 12,
@@ -153,6 +146,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#929A95',
     fontSize: 11,
-    marginTop: 28,
+    marginTop: 46,
   },
 });

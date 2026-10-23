@@ -1,4 +1,3 @@
-
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useMemo, useState } from 'react';
@@ -6,11 +5,10 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TransactionItem } from '@/components/TransactionItem';
-import { mockTransactions, type TransactionType } from '@/features/wallet/mockTransactions';
+import { filterTransactions, type TransactionFilter } from '@/features/wallet/filterTransactions';
+import { mockTransactions } from '@/features/wallet/mockTransactions';
 
-type Filter = 'all' | TransactionType;
-
-const filters: { label: string; value: Filter }[] = [
+const filters: { label: string; value: TransactionFilter }[] = [
   { label: 'Todas', value: 'all' },
   { label: 'Entradas', value: 'income' },
   { label: 'Saídas', value: 'expense' },
@@ -18,25 +16,17 @@ const filters: { label: string; value: Filter }[] = [
 
 export default function TransactionsScreen() {
   const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState<Filter>('all');
+  const [activeFilter, setActiveFilter] = useState<TransactionFilter>('all');
 
-  const filteredTransactions = useMemo(() => {
-    const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR');
-
-    return mockTransactions.filter((transaction) => {
-      const matchesFilter =
-        activeFilter === 'all' || transaction.type === activeFilter;
-
-      const searchableText =
-        `${transaction.title} ${transaction.description}`.toLocaleLowerCase(
-          'pt-BR',
-        );
-
-      const matchesSearch = searchableText.includes(normalizedSearch);
-
-      return matchesFilter && matchesSearch;
-    });
-  }, [search, activeFilter]);
+  const filteredTransactions = useMemo(
+    () =>
+      filterTransactions({
+        transactions: mockTransactions,
+        search,
+        filter: activeFilter,
+      }),
+    [search, activeFilter],
+  );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

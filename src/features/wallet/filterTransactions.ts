@@ -1,4 +1,3 @@
-
 import type { Transaction, TransactionType } from './mockTransactions';
 
 export type TransactionFilter = 'all' | TransactionType;

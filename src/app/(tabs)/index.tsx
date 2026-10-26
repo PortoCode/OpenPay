@@ -5,9 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalanceCard } from '@/components/BalanceCard';
 import { QuickAction } from '@/components/QuickAction';
+import { useWallet } from '@/features/wallet/WalletProvider';
 
 export default function HomeScreen() {
-  const balance = 8420.75;
+  const { balance } = useWallet();
 
   function showComingSoon(action: string) {
     Alert.alert(
@@ -44,7 +45,7 @@ export default function HomeScreen() {
             <QuickAction
               icon="↗"
               label="Enviar"
-              onPress={() => showComingSoon('Enviar dinheiro')}
+              onPress={() => router.push('/send')}
             />
             <QuickAction
               icon="+"

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TransactionItem } from '@/components/TransactionItem';
 import { filterTransactions, type TransactionFilter } from '@/features/wallet/filterTransactions';
-import { mockTransactions } from '@/features/wallet/mockTransactions';
+import { useWallet } from '@/features/wallet/WalletProvider';
 
 const filters: { label: string; value: TransactionFilter }[] = [
   { label: 'Todas', value: 'all' },
@@ -15,13 +15,14 @@ const filters: { label: string; value: TransactionFilter }[] = [
 ];
 
 export default function TransactionsScreen() {
+  const { transactions } = useWallet();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<TransactionFilter>('all');
 
   const filteredTransactions = useMemo(
     () =>
       filterTransactions({
-        transactions: mockTransactions,
+        transactions,
         search,
         filter: activeFilter,
       }),
@@ -41,7 +42,7 @@ export default function TransactionsScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Voltar para a tela anterior"
-            onPress={() => router.back()}
+            onPress={() => router.replace('/(tabs)')}
             style={styles.backButton}
           >
             <Text style={styles.backButtonText}>‹</Text>
